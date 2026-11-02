@@ -1118,6 +1118,13 @@ select {
 }
 
 /* ---------------------------------------------------------------- breakpoints */
+@media (max-width: 420px) {
+  .field-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}
+
 @media (min-width: 560px) {
   .filters {
     grid-template-columns: 1fr 1fr auto;

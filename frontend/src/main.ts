@@ -110,6 +110,7 @@ const lastUpdated = el<HTMLParagraphElement>("last-updated");
 const apiStatus = el<HTMLSpanElement>("api-status");
 const apiStatusText = el<HTMLSpanElement>("api-status-text");
 
+const formCard = el<HTMLElement>("form-card");
 const form = el<HTMLFormElement>("transaction-form");
 const formTitle = el<HTMLHeadingElement>("form-title");
 const formEyebrow = el<HTMLParagraphElement>("form-eyebrow");
@@ -354,6 +355,7 @@ function renderBreakdown(): void {
     .map((group) => {
       const width = Math.max(2, Math.round((group.total_minor / max) * 100));
       const share = Math.round((group.total_minor / totalMoved) * 100);
+      const shareLabel = share === 0 ? "<1" : String(share);
       return `
         <div class="breakdown-row" role="listitem">
           <div class="breakdown-label">
@@ -363,10 +365,10 @@ function renderBreakdown(): void {
           <div class="breakdown-visual">
             <div class="bar-track" role="img" aria-label="${escapeHtml(
               group.category,
-            )} ${group.type}: ${share}% of tracked money">
+            )} ${group.type}: ${shareLabel}% of tracked money">
               <span class="bar-fill ${group.type}" style="width:${width}%"></span>
             </div>
-            <span class="breakdown-share">${share}%</span>
+            <span class="breakdown-share">${shareLabel}%</span>
           </div>
           <span class="breakdown-amount">${escapeHtml(
             formatMoney(group.total_minor),
@@ -490,7 +492,7 @@ function setFormMode(transaction: Transaction | null): void {
   cancelEdit.classList.toggle("hidden", transaction === null);
   formEyebrow.textContent = transaction ? "Editing entry" : "New entry";
   formTitle.textContent = transaction ? "Edit transaction" : "Add a transaction";
-  form.classList.toggle("editing", transaction !== null);
+  formCard.classList.toggle("editing", transaction !== null);
 
   if (transaction) {
     const typeRadio = form.querySelector<HTMLInputElement>(
@@ -501,7 +503,7 @@ function setFormMode(transaction: Transaction | null): void {
     categorySelect.value = transaction.category;
     dateInput.value = transaction.date;
     descriptionInput.value = transaction.description;
-    el<HTMLElement>("form-card").scrollIntoView({ behavior: "smooth", block: "start" });
+    formCard.scrollIntoView({ behavior: "smooth", block: "start" });
     amountInput.focus({ preventScroll: true });
   } else {
     form.reset();
