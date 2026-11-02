@@ -6,10 +6,12 @@
 | | |
 | --- | --- |
 | **Version** | `v0.1.0` |
-| **Status** | Published and verified |
+| **Status** | Published, CI-verified and released |
 | **Branch** | `main` |
 | **Repository** | <https://github.com/marvel060/PocketLedger> |
 | **Release** | <https://github.com/marvel060/PocketLedger/releases/tag/v0.1.0> |
+| **Release commit** | `a1d2434343dd2f9bfd79a69d526f3d3b9489ea4e` |
+| **Latest CI** | ✅ Success — [run 41419629969](https://github.com/marvel060/PocketLedger/actions/runs/41419629969) |
 | **Owner** | `marvel060` |
 | **Report date** | 2 November 2026 |
 
@@ -191,7 +193,7 @@ PocketLedger/
 | --- | --- | --- |
 | Initial publication | `b3e3d47..b6a02b2` | Success, fast-forward |
 | CI, browser tests, screenshots | `b6a02b2..dc77bdb` | Success, fast-forward |
-| Final documentation and version metadata | see `origin/main` | Success |
+| Final documentation, report and version metadata | `dc77bdb..a1d2434` | Success, fast-forward |
 
 - No force-push or history rewrite was used.
 - Remote history was verified as an ancestor before the first push
@@ -209,16 +211,32 @@ V0.1.0 commit history:
 | `54f23a4` | fix: correct edit highlight, mobile form layout and share rounding |
 | `29ec0dd` | test: add Playwright browser coverage and CI job |
 | `dc77bdb` | docs: add authentic screenshots and local data guidance |
-| final | docs: publish the v0.1.0 report and version metadata |
+| `a1d2434` | docs: publish the v0.1.0 report and align version metadata |
 
-The final commit SHA is reported alongside this file and matches the `v0.1.0`
-tag target.
+**Release commit SHA:** `a1d2434343dd2f9bfd79a69d526f3d3b9489ea4e`
+
+The annotated `v0.1.0` tag resolves to this exact commit, which passed all
+three CI jobs before the release was created. A subsequent docs-only commit
+refreshed this report; it does not change the released application code. The
+latest docs commit is visible in `git log` on `main`.
 
 ---
 
 ## CI results
 
 Workflow: <https://github.com/marvel060/PocketLedger/actions/workflows/ci.yml>
+
+### Final release-validation run
+
+**URL:** <https://github.com/marvel060/PocketLedger/actions/runs/41419629969>
+**SHA:** `a1d2434343dd2f9bfd79a69d526f3d3b9489ea4e` (release commit)
+**Conclusion:** **Success**
+
+| Job | Result | Details |
+| --- | --- | --- |
+| Backend tests (Python 3.11) | ✅ Success | **18 passed** in 0.34 s |
+| Frontend typecheck & build (Node 22) | ✅ Success | `tsc --noEmit` and Vite build |
+| Browser tests (Playwright / Chromium) | ✅ Success | **10 passed** in 7.6 s |
 
 ### Run for the browser-test commit
 
@@ -268,7 +286,7 @@ the UI exactly as a user would.
 | API connection failure and retry recovery | ✅ |
 
 **Local run:** 10 passed (11.4 s).
-**CI run:** 10 passed (7.8 s).
+**Final release CI run:** 10 passed (7.6 s).
 **Screenshots:** generated from this suite, in `docs/screenshots/`.
 
 ### Defects found and fixed
@@ -357,9 +375,14 @@ real data.
 | Field | Value |
 | --- | --- |
 | Version | `v0.1.0` |
-| Tag | `v0.1.0` |
+| Tag | `v0.1.0` (annotated) |
 | Release URL | <https://github.com/marvel060/PocketLedger/releases/tag/v0.1.0> |
 | Target | `main` |
+| Target commit | `a1d2434343dd2f9bfd79a69d526f3d3b9489ea4e` |
+| Tag verification | Resolves to `a1d2434` — matches the release commit |
+| State | Published — not a draft, not a prerelease |
+| Published at | 2026-11-02 09:20:15 UTC |
+| Deployment | None by design |
 
 ### Release summary
 
@@ -390,4 +413,4 @@ API publicly would be unsafe without access controls.
 
 ---
 
-*PocketLedger v0.1.0 · MIT licensed · Report prepared 2 November 2026.*
+*PocketLedger v0.1.0 · MIT licensed · Report prepared and refreshed on 2 November 2026.*
