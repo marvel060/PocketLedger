@@ -31,7 +31,7 @@ async def lifespan(_: FastAPI):
 app = FastAPI(
     title="PocketLedger API",
     description="A small income and expense tracker API.",
-    version="1.0.0",
+    version="0.1.0",
     lifespan=lifespan,
 )
 
