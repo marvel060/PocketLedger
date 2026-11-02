@@ -6,8 +6,20 @@ transactions, organize them by category, and see where your money is going.
 Everything is stored locally in a single SQLite file — no accounts, no bank
 connections, no paid services.
 
+![CI](https://github.com/marvel060/PocketLedger/actions/workflows/ci.yml/badge.svg)
 ![Stack](https://img.shields.io/badge/stack-FastAPI%20%C2%B7%20SQLite%20%C2%B7%20TypeScript%20%C2%B7%20Vite-0f3d33)
 ![License](https://img.shields.io/badge/license-MIT-d9a441)
+
+## Screenshots
+
+Captured by the Playwright suite against the production build, using a
+disposable demo database.
+
+| Desktop — 1440 px | Mobile — 390 px |
+| --- | --- |
+| [![PocketLedger desktop dashboard](docs/screenshots/desktop-1440.png)](docs/screenshots/desktop-1440.png) | [![PocketLedger mobile dashboard](docs/screenshots/mobile-390.png)](docs/screenshots/mobile-390.png) |
+| Tablet — 768 px | Summary and ledger |
+| [![PocketLedger tablet dashboard](docs/screenshots/tablet-768.png)](docs/screenshots/tablet-768.png) | Form, filters, category bars and API status |
 
 ## Features
 
@@ -30,8 +42,8 @@ connections, no paid services.
 | Frontend  | HTML5, CSS3, TypeScript (strict), Vite                      |
 | Backend   | Python 3.11+, FastAPI, Pydantic, Uvicorn                    |
 | Database  | SQLite via Python's built-in `sqlite3` (parameterized SQL)  |
-| Tests     | pytest + FastAPI `TestClient`                               |
-| CI        | GitHub Actions (backend tests, frontend typecheck & build)  |
+| Tests     | pytest + FastAPI `TestClient`, Playwright (Chromium)         |
+| CI        | GitHub Actions (pytest, typecheck, build, browser tests)    |
 
 Dependencies are free and open source. No external APIs, analytics or fonts.
 
@@ -51,6 +63,9 @@ PocketLedger/
 │   ├── src/api.ts          # typed API client with error handling/timeouts
 │   ├── src/types.ts        # shared TypeScript contracts
 │   ├── src/styles.css      # mobile-first responsive design system
+│   ├── e2e/
+│   │   └── pocketledger.spec.ts  # browser regression suite
+│   ├── playwright.config.ts
 │   ├── .env.example
 │   ├── tsconfig.json       # strict mode
 │   ├── vite.config.ts
@@ -59,6 +74,7 @@ PocketLedger/
 │   ├── conftest.py         # temp-DB fixture
 │   ├── test_transactions.py
 │   └── test_summary.py
+├── docs/screenshots/       # authentic Playwright captures
 ├── .github/workflows/ci.yml
 ├── pytest.ini
 ├── LICENSE
@@ -115,6 +131,8 @@ Restart Vite after editing environment variables.
 | `npm run typecheck` | `frontend/` | TypeScript strict check |
 | `npm run build` | `frontend/` | Typecheck + production build to `frontend/dist/` |
 | `npm run preview` | `frontend/` | Serve the production build on port 4173 |
+| `npx playwright install chromium` | `frontend/` | Download the browser (once) |
+| `npm run test:e2e` | `frontend/` | Run browser tests against a disposable DB |
 
 ## API reference
 
@@ -176,6 +194,15 @@ Validation rules:
 }
 ```
 
+## Your data stays local
+
+Transactions are written to `backend/pocketledger.db`, a SQLite file on your
+machine. The directory is listed in `.gitignore`, so personal ledger data is
+never committed. Delete the file while the backend is stopped to start fresh.
+Automated tests override `POCKETLEDGER_DB` and use throwaway files under
+`/tmp` (backend) or pytest's `tmp_path`, so they never touch your real ledger.
+There is no cloud sync and no external financial service receives your data.
+
 ## Money handling
 
 Amounts travel through the API, database and JavaScript state as **integer
@@ -225,8 +252,24 @@ npm run typecheck
 npm run build
 ```
 
-CI (`.github/workflows/ci.yml`) runs both suites on pushes and pull requests to
-`main`: Python 3.11 with pytest, and Node 22 with typecheck + production build.
+Browser tests (real Chromium via Playwright):
+
+```bash
+cd frontend
+npx playwright install chromium   # first run only
+npx playwright install-deps chromium  # Linux system libraries, first run only
+npm run test:e2e
+```
+
+`playwright.config.ts` starts Uvicorn (with a disposable `/tmp` database) and
+the production preview server automatically. The suite covers adding income
+and expenses, editing, deleting, balance math, category/type filtering,
+validation errors, persistence after refresh, API-failure recovery, and layouts
+at 390 px, 768 px and 1440 px. It also writes the README screenshots.
+
+CI (`.github/workflows/ci.yml`) runs three jobs on pushes and pull requests to
+`main`: Python 3.11 with pytest, Node 22 with typecheck + production build, and
+Node 22 with Chromium browser tests.
 
 ## Design notes
 
@@ -240,10 +283,14 @@ CI (`.github/workflows/ci.yml`) runs both suites on pushes and pull requests to
 
 ## Limitations
 
-- Single-user and local-only; there is no authentication or multi-device sync.
-- No pagination beyond the server-side `limit`, no recurring transactions,
-  budgets or reports.
+- **Do not expose this API publicly.** It has no authentication or access
+  control, so anyone who can reach a writable deployment could read or modify
+  the ledger. The project is intended for local, single-user use.
+- Single-user and local-only; there is no multi-device sync or user accounts.
+- No pagination beyond the server-side `limit` (default 500), and no recurring
+  transactions, budgets or advanced reports.
 - Dates are plain calendar dates without timezone conversion.
+- Browser tests currently cover Chromium only.
 - Not intended for real banking, tax or accounting use.
 
 ## License
