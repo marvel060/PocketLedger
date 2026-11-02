@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="PocketLedger — a simple, private income and expense tracker."
+    />
+    <meta name="theme-color" content="#0f3d33" />
+    <title>PocketLedger · Personal finance, simplified</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💰</text></svg>" />
+    <script type="module" src="/src/main.ts"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+      <div class="shell header-inner">
+        <a class="brand" href="#overview" aria-label="PocketLedger home">
+          <span class="brand-mark" aria-hidden="true">PL</span>
+          <span class="brand-text">Pocket<strong>Ledger</strong></span>
+        </a>
+        <nav class="nav" aria-label="Primary">
+          <a href="#overview">Overview</a>
+          <a href="#transactions">Transactions</a>
+          <a href="#categories">Categories</a>
+        </nav>
+        <span class="status-pill" id="api-status" data-state="loading">
+          <span class="status-dot" aria-hidden="true"></span>
+          <span id="api-status-text">Connecting…</span>
+        </span>
+      </div>
+    </header>
+
+    <main id="main" class="shell">
+      <section class="hero" id="overview" aria-labelledby="overview-title">
+        <div>
+          <p class="eyebrow">Personal finance, simplified</p>
+          <h1 id="overview-title">Know where every naira goes.</h1>
+          <p class="hero-copy">
+            Record income and expenses, keep them organized by category, and see
+            your balance at a glance.
+          </p>
+        </div>
+        <p class="hero-note" id="last-updated" role="status" aria-live="polite"></p>
+      </section>
+
+      <section class="summary-grid" aria-label="Financial summary">
+        <article class="card summary-card income">
+          <div class="summary-head">
+            <h2>Total income</h2>
+            <span class="summary-icon" aria-hidden="true">↑</span>
+          </div>
+          <p class="summary-value" id="summary-income">—</p>
+          <p class="summary-meta" id="summary-income-meta">Money coming in</p>
+        </article>
+        <article class="card summary-card expense">
+          <div class="summary-head">
+            <h2>Total expenses</h2>
+            <span class="summary-icon" aria-hidden="true">↓</span>
+          </div>
+          <p class="summary-value" id="summary-expense">—</p>
+          <p class="summary-meta" id="summary-expense-meta">Money going out</p>
+        </article>
+        <article class="card summary-card balance">
+          <div class="summary-head">
+            <h2>Current balance</h2>
+            <span class="summary-icon" aria-hidden="true">≈</span>
+          </div>
+          <p class="summary-value" id="summary-balance">—</p>
+          <p class="summary-meta" id="summary-balance-meta">Income minus expenses</p>
+        </article>
+      </section>
+
+      <div class="workspace">
+        <section class="card form-card" id="form-card" aria-labelledby="form-title">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow" id="form-eyebrow">New entry</p>
+              <h2 id="form-title">Add a transaction</h2>
+            </div>
+            <button type="button" class="btn ghost small hidden" id="cancel-edit">
+              Cancel edit
+            </button>
+          </div>
+
+          <form id="transaction-form" novalidate>
+            <fieldset class="type-toggle">
+              <legend class="sr-only">Transaction type</legend>
+              <label class="type-option income">
+                <input type="radio" name="type" value="income" />
+                <span>Income</span>
+              </label>
+              <label class="type-option expense">
+                <input type="radio" name="type" value="expense" checked />
+                <span>Expense</span>
+              </label>
+            </fieldset>
+
+            <div class="field">
+              <label for="amount">Amount</label>
+              <div class="amount-input">
+                <span class="currency-prefix" id="currency-prefix" aria-hidden="true">₦</span>
+                <input
+                  id="amount"
+                  name="amount"
+                  type="number"
+                  inputmode="decimal"
+                  min="0.01"
+                  step="0.01"
+                  placeholder="0.00"
+                  required
+                  aria-describedby="amount-hint"
+                />
+              </div>
+              <p class="hint" id="amount-hint">Amounts are stored in kobo for accuracy.</p>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label for="category">Category</label>
+                <select id="category" name="category" required>
+                  <option value="">Select a category</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="date">Date</label>
+                <input id="date" name="date" type="date" required />
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="description">Description <span class="optional">(optional)</span></label>
+              <input
+                id="description"
+                name="description"
+                type="text"
+                maxlength="200"
+                placeholder="e.g. Groceries at the market"
+                autocomplete="off"
+              />
+            </div>
+
+            <p class="form-error" id="form-error" role="alert" hidden></p>
+
+            <button class="btn primary block" type="submit" id="submit-button">
+              <span id="submit-label">Add expense</span>
+              <span class="spinner hidden" id="submit-spinner" aria-hidden="true"></span>
+            </button>
+          </form>
+        </section>
+
+        <section class="card ledger-card" id="transactions" aria-labelledby="ledger-title">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">History</p>
+              <h2 id="ledger-title">Transactions</h2>
+            </div>
+            <span class="count-badge" id="transaction-count">0 entries</span>
+          </div>
+
+          <div class="filters" role="group" aria-label="Filter transactions">
+            <div class="field compact">
+              <label for="filter-type">Type</label>
+              <select id="filter-type">
+                <option value="all">All types</option>
+                <option value="income">Income</option>
+                <option value="expense">Expense</option>
+              </select>
+            </div>
+            <div class="field compact">
+              <label for="filter-category">Category</label>
+              <select id="filter-category">
+                <option value="all">All categories</option>
+              </select>
+            </div>
+            <button type="button" class="btn ghost small" id="clear-filters">Reset</button>
+          </div>
+
+          <div id="ledger-feedback" class="feedback" role="status" aria-live="polite"></div>
+          <ul class="transaction-list" id="transaction-list" aria-label="Transaction history"></ul>
+        </section>
+      </div>
+
+      <section class="card breakdown-card" id="categories" aria-labelledby="breakdown-title">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Where it goes</p>
+            <h2 id="breakdown-title">Category breakdown</h2>
+          </div>
+          <span class="count-badge" id="breakdown-count">0 categories</span>
+        </div>
+        <div id="breakdown" class="breakdown" role="list" aria-label="Totals by category"></div>
+      </section>
+
+      <footer class="site-footer">
+        <p>PocketLedger · Free, open source, and stored locally. No bank connections, ever.</p>
+        <p class="footer-meta">Built with FastAPI, SQLite and TypeScript.</p>
+      </footer>
+    </main>
+
+    <div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="true"></div>
+  </body>
+</html>
