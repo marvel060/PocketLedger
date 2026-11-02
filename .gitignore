@@ -25,6 +25,8 @@ backend/pocketledger.db*
 node_modules/
 frontend/dist/
 frontend/.vite/
+frontend/playwright-report/
+frontend/test-results/
 *.tsbuildinfo
 
 # Environment & secrets
